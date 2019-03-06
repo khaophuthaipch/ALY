@@ -1,0 +1,69 @@
+---
+title: "Imitation of the Economist graph using ggplot"
+author: "Pimchanok Khaophuthai"
+date: "3/5/2019"
+output: html_document
+---
+
+```{r library}
+library(ggplot2)
+library(data.table)
+```
+
+```{r Read the date}
+df <- fread('Economist_Assignment_Data.csv',drop=1)
+```
+
+First create a scatter plot group by continent using ggplot
+
+```{r ggplot}
+pl <- ggplot(df,aes(x=CPI,y=HDI)) + geom_point(shape=1,size=4,aes(color=factor(Region)))
+print(pl)
+```
+
+Insert a linear line what fitted the data
+
+```{r}
+pl2 <- pl+ geom_smooth(aes(group=1),method = 'lm',formula = y~log(x),se=FALSE,color='red')
+pointsToLabel <- c("Russia", "Venezuela", "Iraq", "Myanmar", "Sudan",
+                   "Afghanistan", "Congo", "Greece", "Argentina", "Brazil",
+                   "India", "Italy", "China", "South Africa", "Spane",
+                   "Botswana", "Cape Verde", "Bhutan", "Rwanda", "France",
+                   "United States", "Germany", "Britain", "Barbados", "Norway", "Japan",
+                   "New Zealand", "Singapore")
+print(pl2)                   
+```
+
+Change the theme of tha plot and add tect label into the graph
+Insert graph title
+
+```{r}
+pl3 <- pl2 + geom_text(aes(label = Country), color = "gray20", 
+                       data = subset(df, Country %in% pointsToLabel),check_overlap = TRUE)
+
+# Rename axis labels
+pl4 <- pl3 + theme_bw() + scale_x_continuous(name="Corruption Perceptions Index, 2011 (10=least corrupt)",limit=c(1,10),breaks = 1:10)+ scale_y_continuous(name="Human Development Index, 2011 (1=Best)", limit=c(0.2,1.0)) + ggtitle("Corruption and Human development")
+pl5 <- pl4 + theme(plot.title = element_text(hjust = 0.5))
+print(pl5)
+```
+
+Change legend title to continent and also change the axis labels
+
+```{r}
+pl5 + labs(color="Continent",element_text(hjust = 0.5))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
